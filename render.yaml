@@ -1,0 +1,26 @@
+# Render deployment, described in the repository instead of clicked
+# through a dashboard. This is "infrastructure as code": the setup
+# lives next to the code and is reviewed with it.
+#
+# No database service is declared. With no connection string the API
+# falls back to SQLite inside the container, which is fine because
+# the data is only a cache of GeoNet and can always be rebuilt.
+
+services:
+  - type: web
+    name: quakewatch-api
+    runtime: docker
+    plan: free
+    region: singapore
+
+    dockerfilePath: ./backend/QuakeWatch.Api/Dockerfile
+    dockerContext: ./backend/QuakeWatch.Api
+
+    # Render calls this to decide whether the container is alive.
+    healthCheckPath: /health
+
+    envVars:
+      # Replace with the real front end URL once Cloudflare Pages
+      # has given you one.
+      - key: Cors__AllowedOrigins__0
+        value: https://quakewatch-nz.pages.dev

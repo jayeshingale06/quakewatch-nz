@@ -1,0 +1,24 @@
+import { PageHeader } from "./components/PageHeader";
+import { StatsRow } from "./components/StatsRow";
+import { QuakeCard } from "./components/QuakeCard";
+import { sampleQuakes } from "./data/sampleQuakes";
+
+function App() {
+  const quakes = sampleQuakes;
+
+  return (
+    <>
+      <PageHeader count={quakes.length} />
+
+      <StatsRow quakes={quakes} />
+
+      <section>
+        {quakes.map((quake) => (
+          <QuakeCard key={quake.publicID} quake={quake} />
+        ))}
+      </section>
+    </>
+  );
+}
+
+export default App;

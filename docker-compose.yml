@@ -1,0 +1,60 @@
+name: quakewatch
+
+services:
+  # ---------- PostgreSQL ----------
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: quakewatch
+      POSTGRES_USER: quakewatch
+      # Local development only. Never a real password in a file
+      # that goes to GitHub.
+      POSTGRES_PASSWORD: localdevonly
+    ports:
+      # Host port 5433, container port 5432.
+      # Something else on this Mac already uses 5432, and the API does
+      # not need this mapping at all: it reaches the database over the
+      # compose network at db:5432. This line exists only so YOU can
+      # connect a database tool from your Mac. Safe to delete.
+      - "5433:5432"
+    volumes:
+      # A named volume, so the data survives "docker compose down".
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quakewatch -d quakewatch"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------- the C# API ----------
+  api:
+    build:
+      context: ./backend/QuakeWatch.Api
+    environment:
+      # Note the host is "db", not localhost. Inside the compose
+      # network, each service is reachable by its service name.
+      ConnectionStrings__Default: "Host=db;Port=5432;Database=quakewatch;Username=quakewatch;Password=localdevonly"
+      Cors__AllowedOrigins__0: "http://localhost:8080"
+      Cors__AllowedOrigins__1: "http://localhost:5173"
+      ASPNETCORE_ENVIRONMENT: "Production"
+    ports:
+      - "5055:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ---------- the React app, served by nginx ----------
+  web:
+    build:
+      context: ./frontend-react
+      args:
+        # The BROWSER calls the API, and the browser is outside
+        # the compose network, so this is localhost, not "api".
+        VITE_API_BASE: "http://localhost:5055"
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:

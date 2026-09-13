@@ -1,0 +1,122 @@
+name: Deploy
+
+# Builds both images, pushes them to GitHub Container Registry, and
+# tells Azure Container Apps to use the new ones.
+
+# MANUAL ONLY, for now.
+#
+# This workflow deploys to Azure. Until the Azure resources and the
+# AZURE_CREDENTIALS secret exist, it would fail on every push and put
+# a red cross on the repository, which looks worse than not having it.
+#
+# To switch it on later, uncomment the push trigger below.
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  API_IMAGE: ghcr.io/${{ github.repository_owner }}/quakewatch-api
+  WEB_IMAGE: ghcr.io/${{ github.repository_owner }}/quakewatch-web
+
+jobs:
+  # Do not deploy code that does not pass CI.
+  test:
+    name: Tests must pass first
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - run: dotnet test backend/QuakeWatch.Api.Tests/QuakeWatch.Api.Tests.csproj
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: frontend-react/package-lock.json
+
+      - run: npm ci
+        working-directory: frontend-react
+
+      - run: npm run typecheck
+        working-directory: frontend-react
+
+      - run: npm test
+        working-directory: frontend-react
+
+  build-and-push:
+    name: Build and push images
+    needs: test
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sign in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push the API image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend/QuakeWatch.Api
+          push: true
+          tags: |
+            ${{ env.API_IMAGE }}:latest
+            ${{ env.API_IMAGE }}:${{ github.sha }}
+
+      # The API address is baked into the React build, so it must
+      # be passed in here as a build argument.
+      - name: Build and push the web image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend-react
+          push: true
+          build-args: |
+            VITE_API_BASE=${{ vars.API_BASE_URL }}
+          tags: |
+            ${{ env.WEB_IMAGE }}:latest
+            ${{ env.WEB_IMAGE }}:${{ github.sha }}
+
+  deploy:
+    name: Deploy to Azure
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Deploying the exact commit SHA, not "latest", so you always
+      # know precisely which code is running in production.
+      - name: Update the API container app
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            az containerapp update \
+              --name quakewatch-api \
+              --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+              --image ${{ env.API_IMAGE }}:${{ github.sha }}
+
+      - name: Update the web container app
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            az containerapp update \
+              --name quakewatch-web \
+              --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+              --image ${{ env.WEB_IMAGE }}:${{ github.sha }}

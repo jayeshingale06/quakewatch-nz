@@ -1,0 +1,222 @@
+/* Ported from the vanilla version. Same design system. */
+
+:root {
+  --color-page: #f4f6f8;
+  --color-surface: #ffffff;
+  --color-text: #1a2330;
+  --color-text-muted: #6b7a88;
+  --color-border: #d4dae0;
+  --color-brand: #0b4f6c;
+
+  --sev-light: #6b7a88;
+  --sev-moderate: #b07c1e;
+  --sev-strong: #a8413a;
+  --sev-major: #7b1e1e;
+
+  --sev-strong-bg: #fdf6f5;
+  --sev-major-bg: #f8eaea;
+
+  --radius: 6px;
+  --gap: 16px;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  background-color: var(--color-page);
+  color: var(--color-text);
+
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+h1 {
+  color: var(--color-brand);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--gap);
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: var(--color-text-muted);
+}
+
+.quake-count {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat {
+  flex: 1;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+
+.stat-label {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  margin: 4px 0 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-brand);
+}
+
+.quake {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--gap);
+  margin-bottom: var(--gap);
+}
+
+.quake-light {
+  border-left: 6px solid var(--sev-light);
+}
+
+.quake-moderate {
+  border-left: 6px solid var(--sev-moderate);
+}
+
+.quake-strong {
+  border-left: 6px solid var(--sev-strong);
+  background-color: var(--sev-strong-bg);
+}
+
+.quake-major {
+  border-left: 6px solid var(--sev-major);
+  background-color: var(--sev-major-bg);
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+strong {
+  color: var(--sev-strong);
+}
+
+time {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* ---------- filter bar ---------- */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.filter-button {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.filter-button:hover {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+}
+
+.filter-button:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+.filter-button.is-active {
+  background-color: var(--color-brand);
+  border-color: var(--color-brand);
+  color: var(--color-surface);
+}
+
+/* ---------- empty state ---------- */
+
+.empty {
+  margin: 0;
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--color-text-muted);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+}
+
+/* ---------- header right side ---------- */
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reload-button {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: var(--color-surface);
+  color: var(--color-brand);
+  cursor: pointer;
+}
+
+.reload-button:hover {
+  border-color: var(--color-brand);
+}
+
+.reload-button:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+/* ---------- status messages ---------- */
+
+.status {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.status-error {
+  background-color: var(--sev-major-bg);
+  border-color: var(--sev-strong);
+  color: var(--sev-major);
+}
+

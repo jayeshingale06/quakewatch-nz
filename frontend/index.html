@@ -1,0 +1,54 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>QuakeWatch NZ</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header class="page-header">
+      <div>
+        <h1>QuakeWatch NZ</h1>
+        <p class="subtitle">Recent earthquakes in New Zealand from GeoNet</p>
+      </div>
+
+      <div class="header-right">
+        <p class="quake-count"><span id="quake-count">-</span> earthquakes</p>
+        <button id="reload-button" class="reload-button">Reload</button>
+      </div>
+    </header>
+
+    <section class="stats">
+      <div class="stat">
+        <p class="stat-label">Total</p>
+        <p class="stat-value" id="stat-total">-</p>
+      </div>
+
+      <div class="stat">
+        <p class="stat-label">Strongest</p>
+        <p class="stat-value" id="stat-strongest">-</p>
+      </div>
+
+      <div class="stat">
+        <p class="stat-label">Max shaking</p>
+        <p class="stat-value" id="stat-maxmmi">-</p>
+      </div>
+    </section>
+
+    <div class="filters">
+      <button class="filter-button is-active" data-filter="all">All</button>
+      <button class="filter-button" data-filter="light">Light</button>
+      <button class="filter-button" data-filter="moderate">Moderate</button>
+      <button class="filter-button" data-filter="strong">Strong</button>
+      <button class="filter-button" data-filter="major">Major</button>
+    </div>
+
+    <p id="status" class="status" hidden></p>
+
+    <section id="quake-list"></section>
+
+    <script src="script.js"></script>
+  </body>
+</html>
