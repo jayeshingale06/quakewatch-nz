@@ -1,0 +1,64 @@
+name: Deploy front end to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# GitHub Pages deployment needs these permissions granted explicitly.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# If two pushes happen close together, let the newer one win instead
+# of racing to publish.
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build the static site
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: frontend-react/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: frontend-react
+
+      - name: Build
+        run: npm run build
+        working-directory: frontend-react
+        env:
+          # Tells vite.config.ts to use the /quakewatch-nz/ prefix.
+          GITHUB_PAGES: "true"
+          # Vite bakes this into the JavaScript at build time, so it
+          # has to be set here and not at run time.
+          VITE_API_BASE: https://quakewatch-nz.onrender.com
+
+      - name: Package the built files for Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend-react/dist
+
+  deploy:
+    name: Publish to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
