@@ -24,6 +24,17 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
+# The app runs as a non-root user (see USER below) and therefore cannot
+# write into /app, which root owns. When there is no PostgreSQL
+# connection string the app falls back to a SQLite file, so it needs
+# somewhere it is allowed to write.
+#
+# This directory is inside the container, so it disappears on restart.
+# That is acceptable: the database is only a cache of GeoNet and every
+# row can be refetched. Nothing of value is stored here.
+RUN mkdir -p /app/data && chown -R $APP_UID /app/data
+ENV Sqlite__Path=/app/data/quakewatch.db
+
 # The aspnet base image already defaults to port 8080, so setting
 # ASPNETCORE_URLS here is redundant and makes ASP.NET log a warning
 # about overriding it. EXPOSE is documentation only.

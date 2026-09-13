@@ -4,8 +4,13 @@ A web application that shows recent New Zealand earthquakes, using live public d
 
 This is a rebuild of an earthquake data explorer I originally wrote in R Shiny during my Master of Computer Science at Victoria University of Wellington. The original read a static USGS dataset of roughly 56,000 events. This version is a React and TypeScript front end on a C# REST API, backed by a database, containerised, and deployed to Azure through a CI/CD pipeline.
 
-**Live application:** _add your URL here after deploying_
-**API:** _add your API URL here_ `/api/quakes`
+**Live application:** _paste your Cloudflare Pages URL here_
+**API:** _paste your Render URL here_ `/api/quakes`
+
+> Note on first load: the API runs on a free tier that sleeps after fifteen
+> minutes without traffic. The first request after a quiet period can take up
+> to a minute while the container wakes and refreshes its cache from GeoNet.
+> Loads after that are fast.
 
 ---
 
@@ -174,11 +179,15 @@ The back end tests cover the severity bands at every boundary value, and the Geo
 
 ## Deployment
 
-`deploy/azure-setup.sh` creates the Azure resources once. After that, every push to `main` triggers `.github/workflows/deploy.yml`, which runs the tests, builds both Docker images, pushes them to GitHub Container Registry tagged with the commit SHA, and updates the Azure Container Apps to that exact image.
+Every push to `main` runs `.github/workflows/ci.yml`, which builds the API, runs both test suites, type checks the front end and builds both Docker images on a clean machine.
 
-Both container apps scale to zero replicas when idle.
+Deployment is then handled by the hosting platforms, each watching the repository:
 
-`deploy/azure-teardown.sh` removes everything.
+- The API is deployed from `backend/QuakeWatch.Api/Dockerfile` to a managed container platform, described declaratively in `render.yaml`. It reads the `PORT` environment variable, so the same image runs unchanged on any host that sets it.
+- The front end is built with `npm run build` and served as static files from a CDN, with `VITE_API_BASE` supplied at build time because Vite resolves environment variables when it compiles.
+- No managed database is provisioned. With no connection string the API falls back to SQLite inside the container, which is acceptable because the data is a rebuildable cache of GeoNet.
+
+An Azure Container Apps path is also included and ready to use: `deploy/azure-setup.sh` creates the resources, `azure-status.sh` lists them, `azure-teardown.sh` removes them, and `.github/workflows/deploy.yml` builds images, publishes them to GitHub Container Registry tagged by commit SHA, and deploys that exact SHA rather than a moving `latest` tag. That workflow is currently manual-only; uncommenting its push trigger switches it on.
 
 ---
 

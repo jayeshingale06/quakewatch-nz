@@ -30,11 +30,17 @@ if (!string.IsNullOrWhiteSpace(port))
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
 
+// Where the SQLite file goes when there is no connection string.
+// In a container the app runs as a non-root user and cannot write to
+// /app, so the Dockerfile sets this to a directory it owns. Outside a
+// container it stays in the working folder, where it is easy to open.
+var sqlitePath = builder.Configuration["Sqlite:Path"] ?? "quakewatch.db";
+
 builder.Services.AddDbContext<QuakeDbContext>(options =>
 {
     if (string.IsNullOrWhiteSpace(connectionString))
     {
-        options.UseSqlite("Data Source=quakewatch.db");
+        options.UseSqlite($"Data Source={sqlitePath}");
     }
     else
     {
@@ -85,7 +91,9 @@ using (var scope = app.Services.CreateScope())
 
 app.Logger.LogInformation(
     "Database provider: {Provider}",
-    string.IsNullOrWhiteSpace(connectionString) ? "SQLite (local file)" : "PostgreSQL");
+    string.IsNullOrWhiteSpace(connectionString)
+        ? $"SQLite at {sqlitePath}"
+        : "PostgreSQL");
 
 app.Logger.LogInformation(
     "CORS allows {Count} origin(s)", allowedOrigins.Length);
