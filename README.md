@@ -175,7 +175,7 @@ The back end tests cover the severity bands at every boundary value, and the Geo
 `-- docker-compose.yml
 ```
 
-`frontend/` is the plain HTML, CSS and JavaScript version this project started as. It is kept because it is useful to compare against the React version.
+`frontend/` is the plain HTML, CSS and JavaScript version this project started as, kept deliberately. Rebuilding it as React was a useful exercise in seeing what a component model and a render loop actually buy you, and the two sit side by side for comparison.
 
 ---
 
