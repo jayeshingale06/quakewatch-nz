@@ -183,6 +183,76 @@ public class GeoNetServiceTests
     }
 
     [Fact]
+    public async Task Leaves_out_quakes_that_geonet_has_withdrawn()
+    {
+        // GeoNet marks false detections as "deleted" once a human
+        // rejects them. They must never reach the page.
+        var json = """
+        {
+          "features": [
+            {
+              "properties": {
+                "publicID": "real-quake",
+                "time": "2026-09-14T04:25:03.646Z",
+                "depth": 5,
+                "magnitude": 4.0,
+                "mmi": 4,
+                "locality": "Somewhere real",
+                "quality": "best"
+              }
+            },
+            {
+              "properties": {
+                "publicID": "withdrawn-quake",
+                "time": "2026-09-13T04:25:03.646Z",
+                "depth": 15,
+                "magnitude": 3.0,
+                "mmi": 4,
+                "locality": "10 km west of Waverley",
+                "quality": "deleted"
+              }
+            }
+          ]
+        }
+        """;
+
+        var service = ServiceReturning(json);
+
+        var quakes = await service.GetQuakesAsync(0);
+
+        Assert.Single(quakes);
+        Assert.Equal("real-quake", quakes[0].PublicID);
+    }
+
+    [Fact]
+    public async Task Treats_the_deleted_marker_case_insensitively()
+    {
+        var json = """
+        {
+          "features": [
+            {
+              "properties": {
+                "publicID": "shouty-withdrawn",
+                "time": "2026-09-14T04:25:03.646Z",
+                "depth": 5,
+                "magnitude": 4.0,
+                "mmi": 4,
+                "locality": "Somewhere",
+                "quality": "DELETED"
+              }
+            }
+          ]
+        }
+        """;
+
+        var service = ServiceReturning(json);
+
+        var quakes = await service.GetQuakesAsync(0);
+
+        Assert.Empty(quakes);
+    }
+
+    [Fact]
     public async Task Matches_field_names_whatever_their_capitalisation()
     {
         // GeoNet could send MMI, Mmi or mmi. All must work.

@@ -9,7 +9,11 @@ import { QuakeList } from "./components/QuakeList";
 import { useQuakes } from "./hooks/useQuakes";
 import type { FilterValue } from "./types";
 
-const MINIMUM_MMI = 3;
+// 0 includes earthquakes nobody felt, which is most of them. GeoNet
+// records thousands a year, so a page filtered to MMI 3 and above shows
+// only a handful and looks broken. The severity filters are how a reader
+// narrows it down.
+const MINIMUM_MMI = 0;
 
 function App() {
   // All the fetching, loading and error handling: one line.

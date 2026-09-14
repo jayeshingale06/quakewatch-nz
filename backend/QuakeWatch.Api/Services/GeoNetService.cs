@@ -46,12 +46,20 @@ public class GeoNetService
         }
 
         // 5. Convert THEIR shape into OUR shape, newest first.
+        //
+        // GeoNet marks withdrawn events with quality "deleted". These are
+        // usually false detections a human later rejected. They are not
+        // real earthquakes and must not be displayed.
         return geoNet.Features
             .Where(feature => feature.Properties is not null)
+            .Where(feature => !IsWithdrawn(feature.Properties!))
             .Select(feature => ToQuake(feature.Properties!))
             .OrderByDescending(quake => quake.Time)
             .ToList();
     }
+
+    private static bool IsWithdrawn(GeoNetProperties p) =>
+        string.Equals(p.Quality, "deleted", StringComparison.OrdinalIgnoreCase);
 
     private static Quake ToQuake(GeoNetProperties p) => new Quake(
         PublicID: p.PublicID ?? "unknown",

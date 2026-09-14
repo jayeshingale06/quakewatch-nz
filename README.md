@@ -4,8 +4,8 @@ A web application that shows recent New Zealand earthquakes, using live public d
 
 This is a rebuild of an earthquake data explorer I originally wrote in R Shiny during my Master of Computer Science at Victoria University of Wellington. The original read a static USGS dataset of roughly 56,000 events. This version is a React and TypeScript front end on a C# REST API, backed by a database, containerised, and deployed to Azure through a CI/CD pipeline.
 
-**Live application:** _paste your Cloudflare Pages URL here_
-**API:** _paste your Render URL here_ `/api/quakes`
+**Live application:** https://jayeshingale06.github.io/quakewatch-nz/
+**API:** https://quakewatch-nz.onrender.com/api/quakes
 
 > Note on first load: the API runs on a free tier that sleeps after fifteen
 > minutes without traffic. The first request after a quiet period can take up
