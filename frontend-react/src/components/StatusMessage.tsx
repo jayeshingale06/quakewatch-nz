@@ -12,6 +12,5 @@ export function StatusMessage({ isLoading, errorMessage }: StatusMessageProps) {
     return <p className="status">Loading earthquakes...</p>;
   }
 
-  // Nothing to say. Returning null renders nothing at all.
   return null;
 }

@@ -4,8 +4,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   plugins: [react()],
   test: {
-    // Tests run in Node, which has no document or window.
-    // jsdom is a fake browser so React can render into it.
+    // jsdom stands in for the browser APIs React needs.
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
     css: false,

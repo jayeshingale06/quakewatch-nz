@@ -1,10 +1,6 @@
-// The shape of one earthquake, as our C# API sends it.
-// This must match Models/Quake.cs on the server.
-
-// Severity can only ever be one of these four words.
+// One earthquake as the API sends it. Must match Models/Quake.cs.
 export type Severity = "light" | "moderate" | "strong" | "major";
 
-// A filter is any severity, or the word "all".
 export type FilterValue = Severity | "all";
 
 export interface Quake {

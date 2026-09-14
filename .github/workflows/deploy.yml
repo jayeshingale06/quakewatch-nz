@@ -3,13 +3,11 @@ name: Deploy
 # Builds both images, pushes them to GitHub Container Registry, and
 # tells Azure Container Apps to use the new ones.
 
-# MANUAL ONLY, for now.
-#
-# This workflow deploys to Azure. Until the Azure resources and the
-# AZURE_CREDENTIALS secret exist, it would fail on every push and put
-# a red cross on the repository, which looks worse than not having it.
-#
-# To switch it on later, uncomment the push trigger below.
+# Manual only for now.
+# It deploys to Azure. Until the Azure resources and the AZURE_CREDENTIALS
+# secret exist it would fail on every push and show a red cross, which looks
+# worse than not having it.
+# Uncomment the push trigger below to switch it on.
 on:
   workflow_dispatch:
   # push:

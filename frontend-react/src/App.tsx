@@ -9,17 +9,15 @@ import { QuakeList } from "./components/QuakeList";
 import { useQuakes } from "./hooks/useQuakes";
 import type { FilterValue } from "./types";
 
-// 0 includes earthquakes nobody felt, which is most of them. GeoNet
-// records thousands a year, so a page filtered to MMI 3 and above shows
-// only a handful and looks broken. The severity filters are how a reader
-// narrows it down.
+// 0 includes events nobody felt, which is most of them. Filtering to MMI 3 and
+// above leaves a handful and makes the page look broken, so the severity
+// filters do the narrowing instead.
 const MINIMUM_MMI = 0;
 
 function App() {
-  // All the fetching, loading and error handling: one line.
   const { quakes, isLoading, errorMessage, reload } = useQuakes(MINIMUM_MMI);
 
-  // This state belongs to the screen, not to the data, so it stays here.
+  // Belongs to the screen rather than the data, so it stays here.
   const [activeFilter, setActiveFilter] = useState<FilterValue>("all");
 
   const visibleQuakes =

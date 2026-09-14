@@ -5,8 +5,7 @@ interface FilterBarProps {
   onFilterChange: (filter: FilterValue) => void;
 }
 
-// The buttons are DATA, not repeated JSX.
-// Adding a sixth filter means adding one line here.
+// Filters as data, so adding one is a single line.
 const FILTERS: { value: FilterValue; label: string }[] = [
   { value: "all", label: "All" },
   { value: "light", label: "Light" },

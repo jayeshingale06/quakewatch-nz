@@ -4,10 +4,6 @@ using QuakeWatch.Api.Models;
 
 namespace QuakeWatch.Api.Services;
 
-// Decides where earthquakes come from:
-// fresh copy in the database  -> use it
-// old or empty database       -> refresh from GeoNet first
-
 public class QuakeStore
 {
     private static readonly TimeSpan CacheLifetime = TimeSpan.FromMinutes(10);
@@ -66,12 +62,10 @@ public class QuakeStore
 
         foreach (var quake in fresh)
         {
-            // FindAsync looks up by primary key.
             var existing = await _db.Quakes.FindAsync(quake.PublicID);
 
             if (existing is null)
             {
-                // New earthquake: add a row.
                 _db.Quakes.Add(new QuakeEntity
                 {
                     PublicID = quake.PublicID,
@@ -86,8 +80,7 @@ public class QuakeStore
             }
             else
             {
-                // Already known: update it. GeoNet revises quakes as
-                // humans review them, so quality and magnitude change.
+                // GeoNet revises events as reviewers look at them, so update in place.
                 existing.Magnitude = quake.Magnitude;
                 existing.Depth = quake.Depth;
                 existing.Locality = quake.Locality;
@@ -98,8 +91,7 @@ public class QuakeStore
             }
         }
 
-        // Nothing above touched the database. THIS line does it all,
-        // in one transaction.
+        // Nothing above touched the database. This does it all in one transaction.
         var changes = await _db.SaveChangesAsync();
 
         _logger.LogInformation("Wrote {Changes} rows to the database.", changes);

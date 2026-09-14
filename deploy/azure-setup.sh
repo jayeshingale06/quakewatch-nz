@@ -1,22 +1,13 @@
 #!/usr/bin/env bash
-# ============================================================
-# QuakeWatch: one-time Azure setup
-#
-# Run this ONCE. It creates the resources your app lives in.
-# After this, deployments are done by GitHub Actions.
-#
-# Cost plan: Azure Container Apps has a monthly free grant, and
-# both apps scale to ZERO replicas when nobody is using them, so
-# an idle portfolio project should cost nothing. Images are stored
-# free on GitHub Container Registry, not on paid Azure Registry.
-# CHECK YOUR OWN BILLING. Prices change and free grants change.
-# ============================================================
+# One-time Azure setup. Deployments after this are done by GitHub Actions.
+# Cost: Container Apps has a monthly free grant and both apps scale to zero
+# when idle. Images live on GitHub Container Registry rather than a paid Azure
+# registry. Check your own billing; prices and free grants change.
 
 set -euo pipefail
 
-# ---------- change this one line ----------
+# Change these to your own subscription details.
 GITHUB_USER="your-github-username"
-# ------------------------------------------
 
 RESOURCE_GROUP="quakewatch-rg"
 LOCATION="australiaeast"
@@ -89,8 +80,6 @@ az containerapp update \
   --resource-group "$RESOURCE_GROUP" \
   --set-env-vars "Cors__AllowedOrigins__0=$WEB_URL"
 
-echo ""
-echo "============================================================"
 echo "Done."
 echo "  Web:  $WEB_URL"
 echo "  API:  $API_URL/api/quakes"
@@ -98,4 +87,3 @@ echo ""
 echo "Put these two values into GitHub as repository VARIABLES:"
 echo "  AZURE_RESOURCE_GROUP = $RESOURCE_GROUP"
 echo "  API_BASE_URL         = $API_URL"
-echo "============================================================"

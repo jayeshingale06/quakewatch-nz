@@ -1,28 +1,22 @@
-# ============================================================
-# Stage 1: BUILD. Node compiles React and TypeScript into
-# plain HTML, CSS and JavaScript.
-# ============================================================
+# Build stage: Node compiles React and TypeScript to static files.
 FROM node:24-alpine AS build
 
 WORKDIR /app
 
-# package-lock.json pins exact versions, so this build is
-# reproducible. npm ci is the strict version of npm install.
+# npm ci installs the exact versions in package-lock.json.
 COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
 
-# Vite bakes environment variables INTO the built files at
-# build time, so the API address must be known here.
+# Vite bakes environment variables into the bundle, so the API address has to
+# be known at build time.
 ARG VITE_API_BASE=http://localhost:5055
 ENV VITE_API_BASE=$VITE_API_BASE
 
 RUN npm run build
 
-# ============================================================
-# Stage 2: SERVE. No Node at all. Just nginx and static files.
-# ============================================================
+# Serve stage: nginx and static files only.
 FROM nginx:alpine AS final
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf

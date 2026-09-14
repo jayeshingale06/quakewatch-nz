@@ -7,12 +7,7 @@ namespace QuakeWatch.Api.Tests;
 
 public class GeoNetServiceTests
 {
-    // A FAKE network. It never leaves the machine. It just hands
-    // back whatever JSON the test gave it.
-    //
-    // This is only possible because GeoNetService accepts an
-    // HttpClient instead of creating one. That is dependency
-    // injection paying for itself.
+    // A fake transport. Returns whatever JSON the test hands it, no network.
     private sealed class StubHandler : HttpMessageHandler
     {
         private readonly string _json;
@@ -185,8 +180,7 @@ public class GeoNetServiceTests
     [Fact]
     public async Task Leaves_out_quakes_that_geonet_has_withdrawn()
     {
-        // GeoNet marks false detections as "deleted" once a human
-        // rejects them. They must never reach the page.
+        // GeoNet marks false detections as "deleted" once reviewed.
         var json = """
         {
           "features": [

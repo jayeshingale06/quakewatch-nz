@@ -1,7 +1,6 @@
 name: CI
 
 # Runs on every push to main, and on every pull request.
-# Its job is to answer one question: is this code safe to merge?
 
 on:
   push:

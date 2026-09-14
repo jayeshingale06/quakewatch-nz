@@ -5,7 +5,7 @@ import { useQuakes } from "./useQuakes";
 import { fetchQuakes } from "../api/quakeApi";
 import type { Quake } from "../types";
 
-// Replace the whole api module with fakes. No network is used.
+// The api module is mocked, so no request leaves the machine.
 vi.mock("../api/quakeApi");
 
 const mockedFetchQuakes = vi.mocked(fetchQuakes);

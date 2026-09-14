@@ -1,14 +1,8 @@
 namespace QuakeWatch.Api.Data;
 
-// The shape stored in the DATABASE, one object per row.
-//
-// This is a plain class with { get; set; }, not a record, because
-// Entity Framework creates these itself and fills them in one
-// property at a time. It needs permission to set each one.
-//
-// Times are stored as plain UTC DateTime, because SQLite has no
-// real date type and UTC avoids every timezone problem.
-
+// EF Core creates these itself and fills one property at a time, so this is a
+// class with settable properties rather than a record.
+// Times are stored as UTC DateTime because SQLite has no real date type.
 public class QuakeEntity
 {
     public string PublicID { get; set; } = "";
@@ -18,10 +12,8 @@ public class QuakeEntity
     public int Mmi { get; set; }
     public string Quality { get; set; } = "";
 
-    // When the earthquake happened.
     public DateTime TimeUtc { get; set; }
 
-    // When WE last copied this row from GeoNet. Used to decide
-    // whether our copy is old enough to be worth refreshing.
+    // When this row was last copied from GeoNet. Drives cache staleness.
     public DateTime FetchedAtUtc { get; set; }
 }

@@ -4,7 +4,7 @@ namespace QuakeWatch.Api.Tests;
 
 public class QuakeSeverityTests
 {
-    // A helper so each test only says what it cares about: the MMI.
+    // Keeps each test down to the value it cares about.
     private static Quake QuakeWithMmi(int mmi) => new Quake(
         PublicID: "test-id",
         Magnitude: 5.0,
@@ -15,9 +15,7 @@ public class QuakeSeverityTests
         Time: DateTimeOffset.UtcNow
     );
 
-    // One test method, run once per row. Each row is a case.
-    // The rows deliberately sit ON the band boundaries, because
-    // boundaries are where off-by-one bugs live.
+    // The rows sit on the band boundaries, where off-by-one bugs live.
     [Theory]
     [InlineData(-1, "light")]
     [InlineData(0, "light")]
@@ -36,8 +34,7 @@ public class QuakeSeverityTests
         Assert.Equal(expected, quake.Severity);
     }
 
-    // This is the test that proves the bug from Module 1 is fixed:
-    // there is no MMI value that falls through with no answer.
+    // Every MMI value must land in a band, with no gaps.
     [Fact]
     public void Every_possible_mmi_gets_a_severity()
     {

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Deletes EVERYTHING this project created in Azure.
-# Run it when you no longer want the project online, so it
-# cannot quietly cost you money.
+# Deletes everything this project created in Azure.
+# Run it when the project no longer needs to be online.
 
 set -euo pipefail
 

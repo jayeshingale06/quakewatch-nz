@@ -125,7 +125,7 @@ time {
   font-size: 14px;
 }
 
-/* ---------- filter bar ---------- */
+/* filter bar */
 
 .filters {
   display: flex;
@@ -161,7 +161,7 @@ time {
   color: var(--color-surface);
 }
 
-/* ---------- empty state ---------- */
+/* empty state */
 
 .empty {
   margin: 0;
@@ -172,7 +172,7 @@ time {
   border-radius: var(--radius);
 }
 
-/* ---------- header right side ---------- */
+/* header right side */
 
 .header-right {
   display: flex;
@@ -200,7 +200,7 @@ time {
   outline-offset: 2px;
 }
 
-/* ---------- status messages ---------- */
+/* status messages */
 
 .status {
   margin: 0 0 16px;
@@ -217,4 +217,3 @@ time {
   border-color: var(--sev-strong);
   color: var(--sev-major);
 }
-

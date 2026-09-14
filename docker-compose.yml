@@ -1,7 +1,7 @@
 name: quakewatch
 
 services:
-  # ---------- PostgreSQL ----------
+  # PostgreSQL
   db:
     image: postgres:17-alpine
     environment:
@@ -11,11 +11,9 @@ services:
       # that goes to GitHub.
       POSTGRES_PASSWORD: localdevonly
     ports:
-      # Host port 5433, container port 5432.
-      # Something else on this Mac already uses 5432, and the API does
-      # not need this mapping at all: it reaches the database over the
-      # compose network at db:5432. This line exists only so YOU can
-      # connect a database tool from your Mac. Safe to delete.
+      # Host 5433 to container 5432: something else on this machine holds 5432.
+      # The API does not need this mapping at all; it reaches the database at
+      # db:5432 over the compose network. This is only for a local DB client.
       - "5433:5432"
     volumes:
       # A named volume, so the data survives "docker compose down".
@@ -26,7 +24,7 @@ services:
       timeout: 5s
       retries: 10
 
-  # ---------- the C# API ----------
+  # C# API
   api:
     build:
       context: ./backend/QuakeWatch.Api
@@ -43,7 +41,7 @@ services:
       db:
         condition: service_healthy
 
-  # ---------- the React app, served by nginx ----------
+  # React app, served by nginx
   web:
     build:
       context: ./frontend-react

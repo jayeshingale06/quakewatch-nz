@@ -1,9 +1,6 @@
 namespace QuakeWatch.Api.Models.GeoNet;
 
-// These records describe GEONET'S shape, not ours.
-// We only need them long enough to read the response.
-// Our own shape is Models/Quake.cs.
-
+// GeoNet's response shape. Ours is Models/Quake.cs.
 public record GeoNetResponse(
     List<GeoNetFeature>? Features
 );

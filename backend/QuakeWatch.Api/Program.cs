@@ -1,21 +1,11 @@
-// ============================================================
-// QuakeWatch API
-// ============================================================
-
 using Microsoft.EntityFrameworkCore;
 using QuakeWatch.Api.Data;
 using QuakeWatch.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---------- WHICH PORT TO LISTEN ON ----------
-// Most hosting platforms (Render, Fly, Railway, Heroku, Cloud Run)
-// tell the app which port to use through a PORT variable, and expect
-// it to obey. Azure Container Apps and Docker Compose do not set it,
-// so we fall back to the base image default of 8080.
-//
-// Nine lines that make this image run anywhere.
-
+// Hosting platforms such as Render set PORT and expect the app to use it.
+// Compose and Container Apps do not, so fall back to the image default.
 var port = Environment.GetEnvironmentVariable("PORT");
 
 if (!string.IsNullOrWhiteSpace(port))
@@ -23,17 +13,11 @@ if (!string.IsNullOrWhiteSpace(port))
     builder.WebHost.UseUrls($"http://+:{port}");
 }
 
-// ---------- DATABASE ----------
-// A connection string means PostgreSQL (Docker, Azure).
-// No connection string means SQLite in a local file.
-// Nothing in the code below cares which one it is.
-
+// A connection string means PostgreSQL. No connection string means a local SQLite file.
 var connectionString = builder.Configuration.GetConnectionString("Default");
 
-// Where the SQLite file goes when there is no connection string.
-// In a container the app runs as a non-root user and cannot write to
-// /app, so the Dockerfile sets this to a directory it owns. Outside a
-// container it stays in the working folder, where it is easy to open.
+// The container runs as a non-root user and cannot write to /app, so the
+// Dockerfile points this at a directory it owns.
 var sqlitePath = builder.Configuration["Sqlite:Path"] ?? "quakewatch.db";
 
 builder.Services.AddDbContext<QuakeDbContext>(options =>
@@ -48,8 +32,6 @@ builder.Services.AddDbContext<QuakeDbContext>(options =>
     }
 });
 
-// ---------- GEONET ----------
-
 builder.Services.AddHttpClient<GeoNetService>(client =>
 {
     client.BaseAddress = new Uri("https://api.geonet.org.nz/");
@@ -60,10 +42,8 @@ builder.Services.AddHttpClient<GeoNetService>(client =>
 
 builder.Services.AddScoped<QuakeStore>();
 
-// ---------- CORS ----------
-// The allowed websites now come from configuration, so they can be
-// changed for Docker and Azure without touching any code.
-
+// Origins come from configuration so Docker and Azure can be changed without
+// touching code.
 var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
     .Get<string[]>() ?? [];
@@ -81,8 +61,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// ---------- STARTUP ----------
-
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<QuakeDbContext>();
@@ -98,16 +76,11 @@ app.Logger.LogInformation(
 app.Logger.LogInformation(
     "CORS allows {Count} origin(s)", allowedOrigins.Length);
 
-// ---------- MIDDLEWARE ----------
-
 app.UseCors("frontend");
-
-// ---------- THE MENU ----------
 
 app.MapGet("/", () => "QuakeWatch API is running");
 
-// Docker and Azure call this to check the container is alive.
-// It must be fast and must not touch GeoNet.
+// Liveness probe for the container host. Must be fast and must not call GeoNet.
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
 app.MapGet("/api/quakes", async (

@@ -1,18 +1,7 @@
-// ============================================================
-// QuakeWatch NZ - front end
-// ============================================================
-
-// ---------- 1. CONFIG ----------
-
 const API_BASE = "http://localhost:5055";
-
-// ---------- 2. STATE ----------
-// Both of these change while the app runs, so both are let.
 
 let quakes = [];
 let activeFilter = "all";
-
-// ---------- 3. FORMATTING ----------
 
 function formatTime(isoString) {
   const date = new Date(isoString);
@@ -26,10 +15,7 @@ function formatTime(isoString) {
   });
 }
 
-// ---------- 4. CHOOSING WHAT TO SHOW ----------
-// Severity now comes FROM THE API. The front end no longer
-// decides the bands, so there is nothing here to keep in sync.
-
+// Severity comes from the API, so the front end holds no band rules.
 function getVisibleQuakes() {
   if (activeFilter === "all") {
     return quakes;
@@ -39,8 +25,6 @@ function getVisibleQuakes() {
     return quake.severity === activeFilter;
   });
 }
-
-// ---------- 5. BUILDING HTML ----------
 
 function quakeToHTML(quake) {
   let qualityText = quake.quality;
@@ -61,8 +45,6 @@ function quakeToHTML(quake) {
     </article>
   `;
 }
-
-// ---------- 6. RENDERING ----------
 
 function renderStats() {
   document.querySelector("#stat-total").textContent = quakes.length;
@@ -102,8 +84,6 @@ function renderList() {
   listElement.innerHTML = visible.map(quakeToHTML).join("");
 }
 
-// ---------- 7. STATUS MESSAGES ----------
-
 function showStatus(message, isError) {
   const statusElement = document.querySelector("#status");
 
@@ -116,8 +96,6 @@ function showStatus(message, isError) {
 function hideStatus() {
   document.querySelector("#status").hidden = true;
 }
-
-// ---------- 8. LOADING FROM THE API ----------
 
 async function loadQuakes() {
   showStatus("Loading earthquakes...");
@@ -148,8 +126,6 @@ async function loadQuakes() {
   }
 }
 
-// ---------- 9. EVENTS ----------
-
 const filterButtons = document.querySelectorAll(".filter-button");
 
 filterButtons.forEach(function (button) {
@@ -167,7 +143,5 @@ filterButtons.forEach(function (button) {
 });
 
 document.querySelector("#reload-button").addEventListener("click", loadQuakes);
-
-// ---------- 10. START ----------
 
 loadQuakes();
