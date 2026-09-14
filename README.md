@@ -2,11 +2,12 @@
 
 A web application that shows recent New Zealand earthquakes, using live public data from [GeoNet](https://www.geonet.org.nz/).
 
-This is a rebuild of an earthquake data explorer I originally wrote in R Shiny during my Master of Computer Science at Victoria University of Wellington. The original read a static USGS dataset of roughly 56,000 events. This version is a React and TypeScript front end on a C# REST API, backed by a database, containerised, and deployed to Azure through a CI/CD pipeline.
+This is a rebuild of an earthquake data explorer I originally wrote in R Shiny during my Master of Computer Science at Victoria University of Wellington. The original read a static USGS dataset of roughly 56,000 events. This version is a React and TypeScript front end on a C# REST API, backed by a database, containerised with Docker, and deployed to managed container hosting with automated tests and deployment on every push to main.
 
 **Live application:** https://jayeshingale06.github.io/quakewatch-nz/
 **API:** https://quakewatch-nz.onrender.com/api/quakes
-![QuakeWatch NZ](docs/screenshot.png)
+
+![QuakeWatch NZ showing recent New Zealand earthquakes, colour coded by shaking intensity](docs/screenshot.png)
 
 > Note on first load: the API runs on a free tier that sleeps after fifteen
 > minutes without traffic. The first request after a quiet period can take up
@@ -58,7 +59,7 @@ The API is not a pass through. It is the only thing that talks to GeoNet, which 
 | Database | PostgreSQL in Docker, SQLite for local development |
 | Tests | xUnit, Vitest, React Testing Library |
 | Containers | Docker, multi stage builds, nginx |
-| Hosting | Azure Container Apps |
+| Hosting | Managed container hosting for the API, static CDN hosting for the front end. An Azure Container Apps path is included but not currently in use. |
 | CI/CD | GitHub Actions, GitHub Container Registry |
 
 ---
