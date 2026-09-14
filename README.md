@@ -6,6 +6,7 @@ This is a rebuild of an earthquake data explorer I originally wrote in R Shiny d
 
 **Live application:** https://jayeshingale06.github.io/quakewatch-nz/
 **API:** https://quakewatch-nz.onrender.com/api/quakes
+![QuakeWatch NZ](docs/screenshot.png)
 
 > Note on first load: the API runs on a free tier that sleeps after fifteen
 > minutes without traffic. The first request after a quiet period can take up
@@ -203,3 +204,4 @@ An Azure Container Apps path is also included and ready to use: `deploy/azure-se
 ## Data source
 
 Earthquake data is provided by [GeoNet](https://www.geonet.org.nz/), a collaboration between Earth Sciences New Zealand, the Earthquake Commission and Land Information New Zealand. GeoNet data is made freely available.
+
